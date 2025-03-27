@@ -1,22 +1,31 @@
 .home-container{
     height: 100vh;
     width: 100vw;
+    position: relative;
 }
-
+.menu-container{
+    position:absolute;
+    height: 100%;
+    width: 20em;
+}
 .menu{
+    position:absolute;
     display: flex;
-    justify-content: space-evenly;
+    flex-direction: column;
     background: #3c3c3c;
-    height:3em;
-    padding:10px;
+    height:100%;
+    width:100%;
+    transition:.4s ease;
+    overflow-y: auto;
+    left: -20em;
+
 }
 .menu-links{
-    text-align: center;
-    cursor: pointer;
     display:flex;
     justify-content: center;
-    align-items: center;
-    padding:20px;
+    cursor: pointer;
+    width:100%;
+    margin-top:2em;
 }
 .menu-links a{
     text-decoration: none;
@@ -26,4 +35,48 @@
 }
 .menu-links a:hover{
     color: #fedc2a;
+}
+.menu-btn{
+    position:absolute;
+    z-index: 2;
+    right:10px;
+    top:10px;
+}
+.menu-btn button{
+    aspect-ratio: 1/1;
+    height:30px;
+    background: transparent;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding:0;
+}
+.menu-btn img{
+    height: 100%;
+    width: 100%;
+}
+.burger-btn{
+    position:absolute;
+    padding:0;
+    aspect-ratio: 1/1;
+    height:30px;
+    background: transparent;
+    top:25px;
+    left:15px;
+}
+.burger-btn img{
+    height: 100%;
+    width: 100%;
+    object-fit: contain;
+}
+.summary-container{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 2em;
+}
+.summary-container h1,h2, p{
+    margin:0;
+    padding:10px;
 }

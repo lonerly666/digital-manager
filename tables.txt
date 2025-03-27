@@ -1,0 +1,72 @@
+SET FOREIGN_KEY_CHECKS = 0;
+DROP TABLE IF EXISTS admin, workers, member, admin_work_shifts, services, orders, order_services; -- List all table names manually
+SET FOREIGN_KEY_CHECKS = 1;
+
+
+CREATE TABLE admin (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(255) NOT NULL,
+    email VARCHAR(255) UNIQUE NULL,
+    phone VARCHAR(20) UNIQUE NULL, 
+    password_hash VARCHAR(255) NOT NULL, -- Store hashed password
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE workers (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(255) NOT NULL,
+    phone VARCHAR(20) UNIQUE NULL, -- Optional
+    hired_date DATE NOT NULL,
+    end_date DATE NULL, -- Worker end date
+    is_active BOOLEAN DEFAULT TRUE, -- If still working at the store
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE member (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(255) NOT NULL,
+    phone VARCHAR(20) UNIQUE,  -- Walk-ins may only provide a phone number
+    email VARCHAR(255) UNIQUE NULL,  -- Optional for non-members
+    points_balance DECIMAL(10,2) DEFAULT 0,  -- Store point balance
+    registered_at TIMESTAMP NULL  -- NULL if non-member
+);
+
+CREATE TABLE admin_work_shifts (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    admin_id INT NOT NULL,
+    shift_date DATE NOT NULL,          -- The date of the shift
+    shift_start TIME NOT NULL,         -- Actual clock-in time
+    shift_end TIME NOT NULL,           -- Actual clock-out time
+    total_hours DECIMAL(5,2) GENERATED ALWAYS AS 
+        (TIMESTAMPDIFF(MINUTE, shift_start, shift_end) / 60) STORED,  -- Auto-calculate hours
+    FOREIGN KEY (admin_id) REFERENCES admin(id) ON DELETE CASCADE
+);
+
+CREATE TABLE services (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(100) NOT NULL,
+    description TEXT,
+    price DECIMAL(10,2) NOT NULL,
+    duration INT NOT NULL  -- In minutes
+);
+
+CREATE TABLE orders (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    member_id INT NULL, -- NULL if the order is placed by a non-member
+    total_amount DECIMAL(10,2) NOT NULL, -- Total price before discount
+    discount DECIMAL(10,2) NOT NULL DEFAULT 0, -- Discount applied
+    final_amount DECIMAL(10,2) NOT NULL, -- Total after discount
+    points_used DECIMAL(10,2) NOT NULL DEFAULT 0, -- Points used for payment
+    order_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (member_id) REFERENCES member(id) ON DELETE SET NULL
+);
+
+
+CREATE TABLE order_services (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    order_id INT NOT NULL,
+    service_id INT NOT NULL,
+    quantity INT NOT NULL DEFAULT 1, -- In case a customer buys multiple of the same service
+    FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE,
+    FOREIGN KEY (service_id) REFERENCES services(id) ON DELETE CASCADE
+);
